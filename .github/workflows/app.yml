@@ -1,0 +1,102 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: myuser
+          POSTGRES_PASSWORD: mypassword
+          POSTGRES_DB: mydatabase
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U myuser" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install
+
+    - name: Run Django migrations
+      env:
+        DATABASE_URL: postgres://myuser:mypassword@localhost:5432/mydatabase
+      run: |
+        poetry run python manage.py migrate
+
+    - name: Run Django tests
+      env:
+        DATABASE_URL: postgres://myuser:mypassword@localhost:5432/mydatabase
+      run: |
+        poetry run pytest
+
+    - name: Lint with flake8
+      run: |
+        poetry run flake8 .
+
+    - name: Format with black
+      run: |
+        poetry run black --check .
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js 16
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      working-directory: ./frontend
+      run: npm install
+
+    - name: Lint with ESLint
+      working-directory: ./frontend
+      run: npm run lint
+
+    - name: Format with Prettier
+      working-directory: ./frontend
+      run: npm run format
+
+    - name: Run unit tests with Jest
+      working-directory: ./frontend
+      run: npm run test:unit
+
+    - name: Run end-to-end tests with Cypress
+      working-directory: ./frontend
+      run: npm run test:e2e
+
+    - name: Build Vue.js app
+      working-directory: ./frontend
+      run: npm run build

@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.env
+.env
+*.sqlite3
+
+# Django
+/static/
+media/
+db.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+.mypy_cache/
+.pytest_cache/
+django_server.log
+
+# Poetry
+poetry.lock
+
+# Vue.js
+/node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+*.log
+*.out
+*.err
+
+# IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+docker-compose.override*.yml
+.docker/
+Dockerfile
+*.container
+*.tar
+
+# Coverage reports
+htmlcov/
+.coverage
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Celery beat schedule file
+celerybeat-schedule
+
+# Grafana
+/grafana/
